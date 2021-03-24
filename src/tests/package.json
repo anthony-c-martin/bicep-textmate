@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.35",
+    "@types/plist": "^3.0.2",
+    "@types/yamljs": "^0.2.31",
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
+    "onigasm": "^2.2.5",
+    "plist": "^3.0.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3",
+    "vscode-oniguruma": "^1.5.0",
+    "vscode-textmate": "^5.3.1",
+    "yamljs": "^0.3.0"
+  },
+  "scripts": {
+    "test": "mocha -r ts-node/register tests.ts"
+  }
+}

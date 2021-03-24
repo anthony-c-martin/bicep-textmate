@@ -1,0 +1,8 @@
+  targetScope = 'resourceGroup'
+//~~~~~~~~~~~                   source.bicep, keyword.control.declaration.bicep
+//           ~~~                source.bicep
+//              ~               source.bicep, string.quoted.single.bicep, punctuation.definition.string.begin.bicep
+//               ~~~~~~~~~~~~~  source.bicep, string.quoted.single.bicep
+//                            ~ source.bicep, string.quoted.single.bicep, punctuation.definition.string.end.bicep
+  
+//~                             source.bicep
