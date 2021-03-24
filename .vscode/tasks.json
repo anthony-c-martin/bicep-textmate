@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "convert",
+            "path": "src/vscode-biceptm/",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "convert"
+        }
+    ]
+}P

@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "configurations": [
+        {
+            "name": "VSCode Textmate Test",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--enable-proposed-api",
+                "--extensionDevelopmentPath=${workspaceRoot}/src/vscode-biceptm"
+            ],
+            "preLaunchTask": "convert"
+        }
+    ]
+}
