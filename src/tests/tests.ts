@@ -1,5 +1,5 @@
 import { readdirSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, stat } from 'fs/promises';
 import { parse as parseYaml } from 'yamljs';
 import { IOnigLib, IToken, parseRawGrammar, Registry, StackElement } from 'vscode-textmate';
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma';
@@ -64,12 +64,14 @@ for (const filePath of baselineFiles) {
     const baselineBaseName = basename(filePath, extname(filePath));
     const baselineFilePath = path.join(dirname(filePath), `${baselineBaseName}.tokens`);
 
-    let diffBefore : string | undefined;
-    let diffAfter: string | undefined;
+    let diffBefore = '';
+    let diffAfter = '';
 
     before(async () => {
       const bicepFile = await readFile(filePath, { encoding: 'utf-8' });
-      diffBefore = await readFile(baselineFilePath, { encoding: 'utf-8' });
+      try {
+        diffBefore = await readFile(baselineFilePath, { encoding: 'utf-8' });
+      } catch {} // ignore and create the baseline file anyway
 
       let baseline = '';
       const tokensByLine = await getTokensByLine(bicepFile);
@@ -92,7 +94,7 @@ for (const filePath of baselineFiles) {
     });
 
     it('Comparing baselines', () => {
-      expect(diffAfter).to.equal(diffBefore);
+      expect(diffAfter).to.equal(diffBefore, `Baseline diff failed. Updated baseline '${baselineFilePath}'.`);
     });
   });
 }

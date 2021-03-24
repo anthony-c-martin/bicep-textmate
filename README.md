@@ -11,6 +11,10 @@ Textmate grammar prototype for https://github.com/Azure/bicep
     npm i
     npm test
     ```
+* The tests:
+    * Run through all the `.bicep` files in [src/tests/baselines](./src/tests/baselines).
+    * Dump the token information to the corresponding `.tokens` files.
+    * Compare to see if there are any differences. This makes it easy to iterate quickly and preview changes.
 
 ## Previewing with VSCode
 * Install dependencies:
