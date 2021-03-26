@@ -3,8 +3,8 @@
     "tasks": [
         {
             "type": "npm",
-            "script": "convert",
-            "path": "src/vscode-biceptm/",
+            "script": "build",
+            "path": "src/grammar/",
             "group": "build",
             "problemMatcher": [],
             "label": "convert"

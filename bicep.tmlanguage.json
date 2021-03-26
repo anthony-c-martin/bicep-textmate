@@ -1,0 +1,425 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Bicep",
+  "scopeName": "source.bicep",
+  "fileTypes": [
+    ".bicep"
+  ],
+  "patterns": [
+    {
+      "include": "#statement"
+    }
+  ],
+  "repository": {
+    "array-literal": {
+      "name": "meta.array-literal.adl",
+      "begin": "\\[(?!(\\s*for\\b))",
+      "end": "\\]",
+      "patterns": [
+        {
+          "include": "#array-property"
+        }
+      ]
+    },
+    "array-property": {
+      "name": "meta.array-property.adl",
+      "begin": "^(?!(\\s*]))",
+      "end": "$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "block-comment": {
+      "name": "comment.block.bicep",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    "comments": {
+      "patterns": [
+        {
+          "include": "#line-comment"
+        },
+        {
+          "include": "#block-comment"
+        }
+      ]
+    },
+    "escape-character": {
+      "name": "constant.character.escape.bicep",
+      "match": "\\\\(u[0-9A-Fa-f]{6}|n|r|t|\\\\|')"
+    },
+    "expression": {
+      "patterns": [
+        {
+          "include": "#identifier"
+        },
+        {
+          "include": "#for-expression"
+        },
+        {
+          "include": "#string-literal"
+        },
+        {
+          "include": "#string-verbatim"
+        },
+        {
+          "include": "#numeric-literal"
+        },
+        {
+          "include": "#named-literal"
+        },
+        {
+          "include": "#object-literal"
+        },
+        {
+          "include": "#array-literal"
+        }
+      ]
+    },
+    "for-expression": {
+      "name": "meta.for-expression.adl",
+      "begin": "\\[\\s*(for)\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        }
+      },
+      "end": "\\]",
+      "patterns": [
+        {
+          "include": "#for-expression-in"
+        },
+        {
+          "include": "#for-expression-end"
+        }
+      ]
+    },
+    "for-expression-end": {
+      "name": "meta.for-expression-end.adl",
+      "begin": "(?<=:)\\s*",
+      "end": "\\s*(?=\\])",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "for-expression-in": {
+      "name": "meta.for-expression-in.adl",
+      "begin": "\\b",
+      "end": ":",
+      "patterns": [
+        {
+          "include": "#for-expression-in-end"
+        },
+        {
+          "include": "#for-expression-in-start"
+        }
+      ]
+    },
+    "for-expression-in-end": {
+      "name": "meta.for-expression-in-end.adl",
+      "begin": "\\b(?<=in)\\s*",
+      "end": "\\b(?=:)",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "for-expression-in-start": {
+      "name": "meta.for-expression-in-start.adl",
+      "begin": "\\b(?<=for)\\s*",
+      "end": "\\b(in)\\b",
+      "endCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "identifier": {
+      "name": "variable.other.readwrite.bicep",
+      "match": "\\b[_$[:alpha:]][_$[:alnum:]]*\\b"
+    },
+    "line-comment": {
+      "name": "comment.line.double-slash.bicep",
+      "match": "//.*$"
+    },
+    "module-statement": {
+      "name": "meta.module-statement.adl",
+      "begin": "\\b(module)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(?=')",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        },
+        "2": {
+          "name": "variable.name.bicep"
+        }
+      },
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#module-statement-end"
+        },
+        {
+          "include": "#string-literal"
+        }
+      ]
+    },
+    "module-statement-end": {
+      "name": "meta.module-statement-end.adl",
+      "begin": "(?<=')\\s*=\\s*(?={)",
+      "end": "(?<=})\\s*$",
+      "patterns": [
+        {
+          "include": "#object-literal"
+        }
+      ]
+    },
+    "named-literal": {
+      "name": "constant.language.bicep",
+      "match": "\\b(true|false|null)\\b"
+    },
+    "numeric-literal": {
+      "name": "constant.numeric.bicep",
+      "match": "[0-9]+"
+    },
+    "object-literal": {
+      "name": "meta.object-literal.adl",
+      "begin": "{",
+      "end": "}",
+      "patterns": [
+        {
+          "include": "#object-property"
+        }
+      ]
+    },
+    "object-property": {
+      "name": "meta.object-property.adl",
+      "begin": "^(?!(\\s*}))",
+      "end": "$",
+      "patterns": [
+        {
+          "include": "#object-property-start"
+        },
+        {
+          "include": "#object-property-end"
+        }
+      ]
+    },
+    "object-property-end": {
+      "name": "meta.object-property-end.adl",
+      "begin": "(?<=:)\\s*",
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "object-property-key-identifier": {
+      "name": "meta.object-property-key-identifier.adl",
+      "match": "(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)",
+      "captures": {
+        "1": {
+          "name": "variable.other.property.bicep"
+        }
+      }
+    },
+    "object-property-key-string": {
+      "name": "meta.object-property-key-string.adl",
+      "begin": "(?=')",
+      "end": "(?<=')"
+    },
+    "object-property-start": {
+      "name": "meta.object-property-start.adl",
+      "begin": "^\\s*",
+      "end": "\\s*:",
+      "patterns": [
+        {
+          "include": "#object-property-key-string"
+        },
+        {
+          "include": "#object-property-key-identifier"
+        }
+      ]
+    },
+    "output-statement": {
+      "name": "meta.output-statement.adl",
+      "begin": "\\b(output)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s*=\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        },
+        "2": {
+          "name": "variable.name.bicep"
+        },
+        "3": {
+          "name": "variable.name.bicep"
+        }
+      },
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "param-statement": {
+      "name": "meta.param-statement.adl",
+      "begin": "\\b(param)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        },
+        "2": {
+          "name": "variable.name.bicep"
+        },
+        "3": {
+          "name": "variable.name.bicep"
+        }
+      },
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "resource-statement": {
+      "name": "meta.resource-statement.adl",
+      "begin": "\\b(resource)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(?=')",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        },
+        "2": {
+          "name": "variable.name.bicep"
+        }
+      },
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#resource-statement-end"
+        },
+        {
+          "include": "#string-literal"
+        }
+      ]
+    },
+    "resource-statement-end": {
+      "name": "meta.resource-statement-end.adl",
+      "begin": "(?<=')\\s*=\\s*((?={)|(?=\\[))",
+      "end": "((?<=})|(?<=\\]))\\s*$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "statement": {
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#targetscope-statement"
+        },
+        {
+          "include": "#param-statement"
+        },
+        {
+          "include": "#resource-statement"
+        },
+        {
+          "include": "#module-statement"
+        },
+        {
+          "include": "#var-statement"
+        },
+        {
+          "include": "#output-statement"
+        }
+      ]
+    },
+    "string-literal": {
+      "name": "string.quoted.single.bicep",
+      "begin": "'(?!(''))",
+      "end": "'",
+      "patterns": [
+        {
+          "include": "#escape-character"
+        },
+        {
+          "include": "#string-literal-subst"
+        }
+      ]
+    },
+    "string-literal-subst": {
+      "name": "meta.string-literal-subst.adl",
+      "begin": "(?<!\\\\)(\\${)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.template-expression.begin.bicep"
+        }
+      },
+      "end": "(})",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.template-expression.end.bicep"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "string-verbatim": {
+      "name": "string.quoted.multi.bicep",
+      "begin": "'''",
+      "end": "'''",
+      "patterns": []
+    },
+    "targetscope-statement": {
+      "name": "meta.targetscope-statement.adl",
+      "begin": "\\b(targetScope)\\s+=\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        }
+      },
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "var-statement": {
+      "name": "meta.var-statement.adl",
+      "begin": "\\b(var)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s*=\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        },
+        "2": {
+          "name": "variable.name.bicep"
+        }
+      },
+      "end": "\\s*$",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    }
+  }
+}

@@ -2,7 +2,36 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "VSCode Textmate Test",
+            "name": "Build Grammar",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "build"
+            ],
+            "cwd": "${workspaceFolder}/src/grammar"
+        },
+        {
+            "name": "Test Grammar",
+            "type": "node",
+            "protocol": "inspector",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/src/tests",
+            "program": "${workspaceFolder}/src/tests/node_modules/mocha/bin/_mocha",
+            "args": [
+                "-r",
+                "ts-node/register",
+                "--timeout",
+                "999999",
+                "--colors",
+                "${workspaceFolder}/src/tests/tests.ts",
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "Extension Preview",
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
