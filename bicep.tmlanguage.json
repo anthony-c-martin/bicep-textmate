@@ -12,7 +12,7 @@
   ],
   "repository": {
     "array-literal": {
-      "name": "meta.array-literal.adl",
+      "name": "meta.array-literal.bicep",
       "begin": "\\[(?!(\\s*for\\b))",
       "end": "\\]",
       "patterns": [
@@ -22,7 +22,7 @@
       ]
     },
     "array-property": {
-      "name": "meta.array-property.adl",
+      "name": "meta.array-property.bicep",
       "begin": "^(?!(\\s*]))",
       "end": "$",
       "patterns": [
@@ -79,7 +79,7 @@
       ]
     },
     "for-expression": {
-      "name": "meta.for-expression.adl",
+      "name": "meta.for-expression.bicep",
       "begin": "\\[\\s*(for)\\b",
       "beginCaptures": {
         "1": {
@@ -97,7 +97,7 @@
       ]
     },
     "for-expression-end": {
-      "name": "meta.for-expression-end.adl",
+      "name": "meta.for-expression-end.bicep",
       "begin": "(?<=:)\\s*",
       "end": "\\s*(?=\\])",
       "patterns": [
@@ -107,7 +107,7 @@
       ]
     },
     "for-expression-in": {
-      "name": "meta.for-expression-in.adl",
+      "name": "meta.for-expression-in.bicep",
       "begin": "\\b",
       "end": ":",
       "patterns": [
@@ -120,7 +120,7 @@
       ]
     },
     "for-expression-in-end": {
-      "name": "meta.for-expression-in-end.adl",
+      "name": "meta.for-expression-in-end.bicep",
       "begin": "\\b(?<=in)\\s*",
       "end": "\\b(?=:)",
       "patterns": [
@@ -130,7 +130,7 @@
       ]
     },
     "for-expression-in-start": {
-      "name": "meta.for-expression-in-start.adl",
+      "name": "meta.for-expression-in-start.bicep",
       "begin": "\\b(?<=for)\\s*",
       "end": "\\b(in)\\b",
       "endCaptures": {
@@ -153,7 +153,7 @@
       "match": "//.*$"
     },
     "module-statement": {
-      "name": "meta.module-statement.adl",
+      "name": "meta.module-statement.bicep",
       "begin": "\\b(module)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(?=')",
       "beginCaptures": {
         "1": {
@@ -174,7 +174,7 @@
       ]
     },
     "module-statement-end": {
-      "name": "meta.module-statement-end.adl",
+      "name": "meta.module-statement-end.bicep",
       "begin": "(?<=')\\s*=\\s*(?={)",
       "end": "(?<=})\\s*$",
       "patterns": [
@@ -192,7 +192,7 @@
       "match": "[0-9]+"
     },
     "object-literal": {
-      "name": "meta.object-literal.adl",
+      "name": "meta.object-literal.bicep",
       "begin": "{",
       "end": "}",
       "patterns": [
@@ -202,7 +202,7 @@
       ]
     },
     "object-property": {
-      "name": "meta.object-property.adl",
+      "name": "meta.object-property.bicep",
       "begin": "^(?!(\\s*}))",
       "end": "$",
       "patterns": [
@@ -215,7 +215,7 @@
       ]
     },
     "object-property-end": {
-      "name": "meta.object-property-end.adl",
+      "name": "meta.object-property-end.bicep",
       "begin": "(?<=:)\\s*",
       "end": "\\s*$",
       "patterns": [
@@ -225,7 +225,7 @@
       ]
     },
     "object-property-key-identifier": {
-      "name": "meta.object-property-key-identifier.adl",
+      "name": "meta.object-property-key-identifier.bicep",
       "match": "(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)",
       "captures": {
         "1": {
@@ -234,12 +234,12 @@
       }
     },
     "object-property-key-string": {
-      "name": "meta.object-property-key-string.adl",
+      "name": "meta.object-property-key-string.bicep",
       "begin": "(?=')",
       "end": "(?<=')"
     },
     "object-property-start": {
-      "name": "meta.object-property-start.adl",
+      "name": "meta.object-property-start.bicep",
       "begin": "^\\s*",
       "end": "\\s*:",
       "patterns": [
@@ -252,7 +252,7 @@
       ]
     },
     "output-statement": {
-      "name": "meta.output-statement.adl",
+      "name": "meta.output-statement.bicep",
       "begin": "\\b(output)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s*=\\s*",
       "beginCaptures": {
         "1": {
@@ -273,7 +273,7 @@
       ]
     },
     "param-statement": {
-      "name": "meta.param-statement.adl",
+      "name": "meta.param-statement.bicep",
       "begin": "\\b(param)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\b",
       "beginCaptures": {
         "1": {
@@ -294,7 +294,7 @@
       ]
     },
     "resource-statement": {
-      "name": "meta.resource-statement.adl",
+      "name": "meta.resource-statement.bicep",
       "begin": "\\b(resource)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s+(?=')",
       "beginCaptures": {
         "1": {
@@ -315,7 +315,7 @@
       ]
     },
     "resource-statement-end": {
-      "name": "meta.resource-statement-end.adl",
+      "name": "meta.resource-statement-end.bicep",
       "begin": "(?<=')\\s*=\\s*((?={)|(?=\\[))",
       "end": "((?<=})|(?<=\\]))\\s*$",
       "patterns": [
@@ -363,7 +363,7 @@
       ]
     },
     "string-literal-subst": {
-      "name": "meta.string-literal-subst.adl",
+      "name": "meta.string-literal-subst.bicep",
       "begin": "(?<!\\\\)(\\${)",
       "beginCaptures": {
         "1": {
@@ -389,7 +389,7 @@
       "patterns": []
     },
     "targetscope-statement": {
-      "name": "meta.targetscope-statement.adl",
+      "name": "meta.targetscope-statement.bicep",
       "begin": "\\b(targetScope)\\s+=\\s*",
       "beginCaptures": {
         "1": {
@@ -404,7 +404,7 @@
       ]
     },
     "var-statement": {
-      "name": "meta.var-statement.adl",
+      "name": "meta.var-statement.bicep",
       "begin": "\\b(var)\\s+(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s*=\\s*",
       "beginCaptures": {
         "1": {

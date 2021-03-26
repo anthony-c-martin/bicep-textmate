@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "@azure-tools/tmlanguage-generator": "^0.1.1",
+    "@azure-tools/tmlanguage-generator": "^0.1.2",
     "@types/node": "^14.14.35",
     "onigasm": "^2.2.5",
     "ts-node": "^9.1.1",
