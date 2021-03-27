@@ -22,7 +22,9 @@
 //        ~~~                                                                                                  string.quoted.single.bicep
 //           ~                                                                                                 string.quoted.single.bicep
     'ada': true
-//   ~~~                                                                                                       variable.other.property.bicep
+//  ~                                                                                                          string.quoted.single.bicep
+//   ~~~                                                                                                       string.quoted.single.bicep
+//      ~                                                                                                      string.quoted.single.bicep
 //         ~~~~                                                                                                variable.other.readwrite.bicep
   }
   resource secrets 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = {
@@ -77,7 +79,9 @@
 //                       ~~                                                                                    string.quoted.single.bicep, punctuation.definition.template-expression.begin.bicep
 //                         ~~                                                                                  string.quoted.single.bicep, constant.numeric.bicep
 //                           ~                                                                                 string.quoted.single.bicep, punctuation.definition.template-expression.end.bicep
-//                            ~~~~~~~                                                                          string.quoted.single.bicep
+//                            ~                                                                                string.quoted.single.bicep
+//                             ~~~                                                                             string.quoted.single.bicep, constant.character.escape.bicep
+//                                ~~~                                                                          string.quoted.single.bicep
 //                                   ~~                                                                        string.quoted.single.bicep, punctuation.definition.template-expression.begin.bicep
 //                                     ~~~                                                                     string.quoted.single.bicep, variable.other.readwrite.bicep
 //                                        ~                                                                    string.quoted.single.bicep, punctuation.definition.template-expression.end.bicep
@@ -103,4 +107,37 @@
 //~~~~~~~~~~~~~                                                                                                string.quoted.multi.bicep
   '''
 //~~~                                                                                                          string.quoted.multi.bicep
+  
+  var func = resourceGroup().location
+//~~~                                                                                                          keyword.control.declaration.bicep
+//    ~~~~                                                                                                     variable.name.bicep
+//           ~~~~~~~~~~~~~                                                                                     entity.name.function.bicep
+//                           ~~~~~~~~                                                                          variable.other.readwrite.bicep
+  var func2 = reference('Microsoft.KeyVault/vaults/secrets', func)
+//~~~                                                                                                          keyword.control.declaration.bicep
+//    ~~~~~                                                                                                    variable.name.bicep
+//            ~~~~~~~~~                                                                                        entity.name.function.bicep
+//                      ~                                                                                      string.quoted.single.bicep
+//                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                     string.quoted.single.bicep
+//                                                        ~                                                    string.quoted.single.bicep
+//                                                           ~~~~                                              variable.other.readwrite.bicep
+  var func3 = union({
+//~~~                                                                                                          keyword.control.declaration.bicep
+//    ~~~~~                                                                                                    variable.name.bicep
+//            ~~~~~                                                                                            entity.name.function.bicep
+    'abc': resourceGroup().id
+//  ~                                                                                                          string.quoted.single.bicep
+//   ~~~                                                                                                       string.quoted.single.bicep
+//      ~                                                                                                      string.quoted.single.bicep
+//         ~~~~~~~~~~~~~                                                                                       entity.name.function.bicep
+//                         ~~                                                                                  variable.other.readwrite.bicep
+  }, {
+    'def': 'test'
+//  ~                                                                                                          string.quoted.single.bicep
+//   ~~~                                                                                                       string.quoted.single.bicep
+//      ~                                                                                                      string.quoted.single.bicep
+//         ~                                                                                                   string.quoted.single.bicep
+//          ~~~~                                                                                               string.quoted.single.bicep
+//              ~                                                                                              string.quoted.single.bicep
+  })
   

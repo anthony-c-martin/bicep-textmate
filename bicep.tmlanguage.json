@@ -48,7 +48,7 @@
     },
     "escape-character": {
       "name": "constant.character.escape.bicep",
-      "match": "\\\\(u[0-9A-Fa-f]{6}|n|r|t|\\\\|')"
+      "match": "\\\\(u[0-9A-Fa-f]{6}|n|r|t|\\\\|'|\\${)"
     },
     "expression": {
       "patterns": [
@@ -75,6 +75,9 @@
         },
         {
           "include": "#array-literal"
+        },
+        {
+          "include": "#function-call"
         }
       ]
     },
@@ -144,9 +147,24 @@
         }
       ]
     },
+    "function-call": {
+      "name": "meta.function-call.bicep",
+      "begin": "\\b(\\b[_$[:alpha:]][_$[:alnum:]]*\\b)\\s*\\(",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.function.bicep"
+        }
+      },
+      "end": "\\)",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
     "identifier": {
       "name": "variable.other.readwrite.bicep",
-      "match": "\\b[_$[:alpha:]][_$[:alnum:]]*\\b"
+      "match": "\\b[_$[:alpha:]][_$[:alnum:]]*\\b(?!\\s*\\()"
     },
     "line-comment": {
       "name": "comment.line.double-slash.bicep",
@@ -233,18 +251,13 @@
         }
       }
     },
-    "object-property-key-string": {
-      "name": "meta.object-property-key-string.bicep",
-      "begin": "(?=')",
-      "end": "(?<=')"
-    },
     "object-property-start": {
       "name": "meta.object-property-start.bicep",
       "begin": "^\\s*",
       "end": "\\s*:",
       "patterns": [
         {
-          "include": "#object-property-key-string"
+          "include": "#string-literal"
         },
         {
           "include": "#object-property-key-identifier"

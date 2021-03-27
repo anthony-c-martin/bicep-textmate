@@ -24,3 +24,11 @@ var multi = ''''''
 var multi2 = '''
       hello!
 '''
+
+var func = resourceGroup().location
+var func2 = reference('Microsoft.KeyVault/vaults/secrets', func)
+var func3 = union({
+  'abc': resourceGroup().id
+}, {
+  'def': 'test'
+})

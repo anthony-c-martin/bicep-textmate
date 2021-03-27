@@ -33,6 +33,7 @@ const meta: typeof tm.meta = tm.meta;
 const identifierStart = "[_$[:alpha:]]";
 const identifierContinue = "[_$[:alnum:]]";
 const beforeIdentifier = `(?=${identifierStart})`;
+const afterIdentifier = `(?<=${identifierContinue})`;
 const identifier = `\\b${identifierStart}${identifierContinue}*\\b`;
 
 const lineComment: MatchRule = {
@@ -63,7 +64,7 @@ const expression: IncludeRule = {
 const escapeChar: MatchRule = {
   key: "escape-character",
   scope: "constant.character.escape.bicep",
-  match: `\\\\(u[0-9A-Fa-f]{6}|n|r|t|\\\\|')`,
+  match: `\\\\(u[0-9A-Fa-f]{6}|n|r|t|\\\\|'|\\\${)`,
 };
 
 const stringVerbatim: BeginEndRule = {
@@ -114,7 +115,7 @@ const namedLiteral: MatchRule = {
 const identifierExpression: MatchRule = {
   key: "identifier",
   scope: "variable.other.readwrite.bicep",
-  match: identifier,
+  match: `${identifier}(?!\\s*\\()`,
 };
 
 const objectPropertyKeyIdentifier: MatchRule = {
@@ -126,20 +127,13 @@ const objectPropertyKeyIdentifier: MatchRule = {
   }
 };
 
-const objectPropertyKeyString: BeginEndRule = {
-  key: "object-property-key-string",
-  scope: meta,
-  begin: `(?=')`,
-  end: `(?<=')`,
-};
-
 const objectPropertyStart: BeginEndRule = {
   key: "object-property-start",
   scope: meta,
   begin: `^\\s*`,
   end: `\\s*:`,
   patterns: [
-    objectPropertyKeyString,
+    stringLiteral,
     objectPropertyKeyIdentifier,
   ],
 };
@@ -242,6 +236,19 @@ const forExpression: BeginEndRule = {
   patterns: [
     forExpressionIn,
     forExpressionEnd,
+  ],
+};
+
+const functionCall: BeginEndRule = {
+  key: "function-call",
+  scope: meta,
+  begin: `\\b(${identifier})\\s*\\(`,
+  beginCaptures: {
+    "1": { scope: "entity.name.function.bicep" },
+  },
+  end: `\\)`,
+  patterns: [
+    expression,
   ],
 };
 
@@ -374,6 +381,7 @@ expression.patterns = [
   namedLiteral,
   objectLiteral,
   arrayLiteral,
+  functionCall,
 ];
 
 const grammar: Grammar = {
