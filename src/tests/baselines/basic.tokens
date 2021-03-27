@@ -141,3 +141,21 @@
 //              ~                                                                                              string.quoted.single.bicep
   })
   
+  @allowed([
+// ~~~~~~~                                                                                                     entity.name.function.bicep
+    'adf'
+//  ~                                                                                                          string.quoted.single.bicep
+//   ~~~                                                                                                       string.quoted.single.bicep
+//      ~                                                                                                      string.quoted.single.bicep
+    'asdgd'
+//  ~                                                                                                          string.quoted.single.bicep
+//   ~~~~~                                                                                                     string.quoted.single.bicep
+//        ~                                                                                                    string.quoted.single.bicep
+  ])
+  @secure()
+// ~~~~~~                                                                                                      entity.name.function.bicep
+  var test = true
+//~~~                                                                                                          keyword.control.declaration.bicep
+//    ~~~~                                                                                                     variable.name.bicep
+//           ~~~~                                                                                              variable.other.readwrite.bicep
+  

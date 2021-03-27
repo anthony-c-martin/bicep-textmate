@@ -32,3 +32,10 @@ var func3 = union({
 }, {
   'def': 'test'
 })
+
+@allowed([
+  'adf'
+  'asdgd'
+])
+@secure()
+var test = true

@@ -46,6 +46,16 @@
         }
       ]
     },
+    "decorator": {
+      "name": "meta.decorator.bicep",
+      "begin": "@",
+      "end": "(?=\\s)",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
     "escape-character": {
       "name": "constant.character.escape.bicep",
       "match": "\\\\(u[0-9A-Fa-f]{6}|n|r|t|\\\\|'|\\${)"
@@ -341,6 +351,9 @@
       "patterns": [
         {
           "include": "#comments"
+        },
+        {
+          "include": "#decorator"
         },
         {
           "include": "#targetscope-statement"

@@ -359,10 +359,21 @@ const outputStatement: BeginEndRule = {
   ],
 };
 
+const decorator: BeginEndRule = {
+  key: "decorator",
+  scope: meta,
+  begin: `@`,
+  end: `(?=\\s)`,
+  patterns: [
+    expression,
+  ],
+};
+
 const statement: IncludeRule = {
   key: "statement",
   patterns: [
     comments,
+    decorator,
     targetScopeStatement,
     paramStatement,
     resourceStatement,
