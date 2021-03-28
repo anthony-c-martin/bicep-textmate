@@ -29,12 +29,19 @@ type BicepScope =
   | "punctuation.definition.template-expression.begin.bicep" 
   | "punctuation.definition.template-expression.end.bicep";
 
+const bounded = (text: string) => `\\b${text}\\b`;
+const after = (regex: string) => `(?<=${regex})`;
+const notAfter = (regex: string) => `(?<!${regex})`;
+const before = (regex: string) => `(?=${regex})`;
+const notBefore = (regex: string) => `(?!${regex})`;
+
 const meta: typeof tm.meta = tm.meta;
 const identifierStart = "[_$[:alpha:]]";
 const identifierContinue = "[_$[:alnum:]]";
-const beforeIdentifier = `(?=${identifierStart})`;
-const afterIdentifier = `(?<=${identifierContinue})`;
-const identifier = `\\b${identifierStart}${identifierContinue}*\\b`;
+const identifier = bounded(`${identifierStart}${identifierContinue}*`);
+
+// whitespace. ideally we'd tokenize in-line block comments, but that's a lot of work. For now, ignore them.
+const ws = `(?:\\s|/\\*.*\\*/)*`;
 
 const lineComment: MatchRule = {
   key: "line-comment",
@@ -78,7 +85,7 @@ const stringVerbatim: BeginEndRule = {
 const stringSubstitution: BeginEndRule = {
   key: "string-literal-subst",
   scope: meta,
-  begin: '(?<!\\\\)(\\${)',
+  begin: `${notAfter(`\\\\`)}(\\\${)`,
   beginCaptures: {
     "1": { scope: "punctuation.definition.template-expression.begin.bicep" },
   },
@@ -92,7 +99,7 @@ const stringSubstitution: BeginEndRule = {
 const stringLiteral: BeginEndRule = {
   key: "string-literal",
   scope: "string.quoted.single.bicep",
-  begin: `'(?!(''))`,
+  begin: `'${notBefore(`''`)}`,
   end: `'`,
   patterns: [
     escapeChar,
@@ -109,13 +116,13 @@ const numericLiteral: MatchRule = {
 const namedLiteral: MatchRule = {
   key: "named-literal",
   scope: "constant.language.bicep",
-  match: `\\b(true|false|null)\\b`,
+  match: bounded(`(true|false|null)`),
 };
 
 const identifierExpression: MatchRule = {
   key: "identifier",
   scope: "variable.other.readwrite.bicep",
-  match: `${identifier}(?!\\s*\\()`,
+  match: `${identifier}${notBefore(`${ws}\\(`)}`,
 };
 
 const objectPropertyKeyIdentifier: MatchRule = {
@@ -127,33 +134,29 @@ const objectPropertyKeyIdentifier: MatchRule = {
   }
 };
 
-const objectPropertyStart: BeginEndRule = {
-  key: "object-property-start",
-  scope: meta,
-  begin: `^\\s*`,
-  end: `\\s*:`,
-  patterns: [
-    stringLiteral,
-    objectPropertyKeyIdentifier,
-  ],
-};
-
-const objectPropertyEnd: BeginEndRule = {
-  key: "object-property-end",
-  scope: meta,
-  begin: `(?<=:)\\s*`,
-  end: `\\s*$`,
-  patterns: [expression],
-};
-
 const objectProperty: BeginEndRule = {
   key: "object-property",
   scope: meta,
-  begin: `^(?!(\\s*}))`,
+  begin: `^${notBefore(`${ws}}`)}`,
   end: `$`,
   patterns: [
-    objectPropertyStart,
-    objectPropertyEnd,
+    {
+      key: "object-property-start",
+      scope: meta,
+      begin: `^${ws}`,
+      end: `${ws}:`,
+      patterns: [
+        stringLiteral,
+        objectPropertyKeyIdentifier,
+      ],
+    },
+    {
+      key: "object-property-end",
+      scope: meta,
+      begin: `${after(`:`)}${ws}`,
+      end: `${ws}$`,
+      patterns: [expression],
+    },
   ],
 };
 
@@ -168,7 +171,7 @@ const objectLiteral: BeginEndRule = {
 const arrayProperty: BeginEndRule = {
   key: "array-property",
   scope: meta,
-  begin: `^(?!(\\s*\]))`,
+  begin: `^${notBefore(`${ws}]`)}`,
   end: `$`,
   patterns: [expression],
 };
@@ -176,197 +179,169 @@ const arrayProperty: BeginEndRule = {
 const arrayLiteral: BeginEndRule = {
   key: "array-literal",
   scope: meta,
-  begin: `\\[(?!(\\s*for\\b))`,
-  end: `\\]`,
+  begin: `\\[${ws}${notBefore(bounded(`for`))}`,
+  end: `]`,
   patterns: [arrayProperty],
-};
-
-const forExpressionInStart: BeginEndRule = {
-  key: "for-expression-in-start",
-  scope: meta,
-  begin: `\\b(?<=for)\\s*`,
-  end: `\\b(in)\\b`,
-  endCaptures: {
-    "1": { scope: "keyword.control.declaration.bicep" },
-  },
-  patterns: [
-    expression,
-  ],
-};
-
-const forExpressionInEnd: BeginEndRule = {
-  key: "for-expression-in-end",
-  scope: meta,
-  begin: `\\b(?<=in)\\s*`,
-  end: `\\b(?=:)`,
-  patterns: [
-    expression,
-  ],
-};
-
-const forExpressionIn: BeginEndRule = {
-  key: "for-expression-in",
-  scope: meta,
-  begin: `\\b`,
-  end: `:`,
-  patterns: [
-    forExpressionInEnd,
-    forExpressionInStart,
-  ],
-};
-
-const forExpressionEnd: BeginEndRule = {
-  key: "for-expression-end",
-  scope: meta,
-  begin: `(?<=:)\\s*`,
-  end: `\\s*(?=\\])`,
-  patterns: [
-    expression,
-  ],
 };
 
 const forExpression: BeginEndRule = {
   key: "for-expression",
   scope: meta,
-  begin: `\\[\\s*(for)\\b`,
+  begin: `\\[${ws}(${bounded(`for`)})`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
   },
-  end: `\\]`,
+  end: `]`,
   patterns: [
-    forExpressionIn,
-    forExpressionEnd,
+    {
+      key: "for-expression-in",
+      scope: meta,
+      begin: after(bounded(`for`)),
+      end: `:`,
+      patterns: [
+        {
+          key: "for-expression-in-start",
+          scope: meta,
+          begin: `${after(bounded(`for`))}${ws}`,
+          end: `(${bounded(`in`)})`,
+          endCaptures: {
+            "1": { scope: "keyword.control.declaration.bicep" },
+          },
+          patterns: [expression],
+        },
+        {
+          key: "for-expression-in-end",
+          scope: meta,
+          begin: `${after(bounded(`in`))}${ws}`,
+          end: before(':'),
+          patterns: [expression],
+        },
+      ],
+    },
+    {
+      key: "for-expression-end",
+      scope: meta,
+      begin: `${after(`:`)}${ws}`,
+      end: `${ws}${before(`]`)}`,
+      patterns: [expression],
+    },
   ],
 };
 
 const functionCall: BeginEndRule = {
   key: "function-call",
   scope: meta,
-  begin: `\\b(${identifier})\\s*\\(`,
+  begin: `(${identifier})${ws}\\(`,
   beginCaptures: {
     "1": { scope: "entity.name.function.bicep" },
   },
   end: `\\)`,
-  patterns: [
-    expression,
-  ],
+  patterns: [expression],
 };
 
 const targetScopeStatement: BeginEndRule = {
   key: "targetscope-statement",
   scope: meta,
-  begin: `\\b(targetScope)\\s+=\\s*`,
+  begin: `(${bounded(`targetScope`)})${ws}=${ws}`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
   },
-  end: `\\s*$`,
-  patterns: [
-    expression,
-  ],
+  end: `$`,
+  patterns: [expression],
 };
 
 const paramStatement: BeginEndRule = {
   key: "param-statement",
   scope: meta,
-  begin: `\\b(param)\\s+(${identifier})\\s+(${identifier})\\b`,
+  begin: `(${bounded(`param`)})${ws}(${identifier})${ws}(${identifier})`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
     "2": { scope: "variable.name.bicep" },
     "3": { scope: "variable.name.bicep" },
   },
-  end: `\\s*$`,
-  patterns: [
-    expression,
-  ],
-};
-
-const resourceStatementEnd: BeginEndRule = {
-  key: "resource-statement-end",
-  scope: meta,
-  begin: `(?<=')\\s*=\\s*((?={)|(?=\\[))`,
-  end: `((?<=})|(?<=\\]))\\s*$`,
-  patterns: [
-    expression,
-  ],
+  end: `$`,
+  patterns: [expression],
 };
 
 const resourceStatement: BeginEndRule = {
   key: "resource-statement",
   scope: meta,
-  begin: `\\b(resource)\\s+(${identifier})\\s+(?=')`,
+  begin: `(${bounded(`resource`)})${ws}(${identifier})${ws}${before(`'`)}`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
     "2": { scope: "variable.name.bicep" },
   },
-  end: `\\s*$`,
+  end: `$`,
   patterns: [
-    resourceStatementEnd,
     stringLiteral,
-  ],
-};
-
-const moduleStatementEnd: BeginEndRule = {
-  key: "module-statement-end",
-  scope: meta,
-  begin: `(?<=')\\s*=\\s*(?={)`,
-  end: `(?<=})\\s*$`,
-  patterns: [
-    objectLiteral,
+    {
+      key: "resource-statement-end",
+      scope: meta,
+      begin: `${after(`'`)}${ws}=${ws}`,
+      end: `$`,
+      patterns: [
+        forExpression,
+        objectLiteral,
+      ],
+    }
   ],
 };
 
 const moduleStatement: BeginEndRule = {
   key: "module-statement",
   scope: meta,
-  begin: `\\b(module)\\s+(${identifier})\\s+(?=')`,
+  begin: `(${bounded(`module`)})${ws}(${identifier})${ws}${before(`'`)}`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
     "2": { scope: "variable.name.bicep" },
   },
-  end: `\\s*$`,
+  end: `$`,
   patterns: [
-    moduleStatementEnd,
     stringLiteral,
+    {
+      key: "module-statement-end",
+      scope: meta,
+      begin: `${after(`'`)}${ws}=${ws}`,
+      end: `$`,
+      patterns: [
+        forExpression,
+        objectLiteral,
+      ],
+    },
   ],
 };
 
 const varStatement: BeginEndRule = {
   key: "var-statement",
   scope: meta,
-  begin: `\\b(var)\\s+(${identifier})\\s*=\\s*`,
+  begin: `(${bounded(`var`)})${ws}(${identifier})${ws}=${ws}`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
     "2": { scope: "variable.name.bicep" },
   },
-  end: `\\s*$`,
-  patterns: [
-    expression,
-  ],
+  end: `$`,
+  patterns: [expression],
 };
 
 const outputStatement: BeginEndRule = {
   key: "output-statement",
   scope: meta,
-  begin: `\\b(output)\\s+(${identifier})\\s+(${identifier})\\s*=\\s*`,
+  begin: `(${bounded(`output`)})${ws}(${identifier})${ws}(${identifier})${ws}=${ws}`,
   beginCaptures: {
     "1": { scope: "keyword.control.declaration.bicep" },
     "2": { scope: "variable.name.bicep" },
     "3": { scope: "variable.name.bicep" },
   },
-  end: `\\s*$`,
-  patterns: [
-    expression,
-  ],
+  end: `$`,
+  patterns: [expression],
 };
 
 const decorator: BeginEndRule = {
   key: "decorator",
   scope: meta,
   begin: `@`,
-  end: `(?=\\s)`,
-  patterns: [
-    expression,
-  ],
+  end: `$`,
+  patterns: [expression],
 };
 
 const statement: IncludeRule = {

@@ -1,0 +1,547 @@
+  param virtualMachineSize string
+//~~~~~                                                                           keyword.control.declaration.bicep
+//      ~~~~~~~~~~~~~~~~~~                                                        variable.name.bicep
+//                         ~~~~~~                                                 variable.name.bicep
+  param adminUsername string
+//~~~~~                                                                           keyword.control.declaration.bicep
+//      ~~~~~~~~~~~~~                                                             variable.name.bicep
+//                    ~~~~~~                                                      variable.name.bicep
+  
+  @secure()
+// ~~~~~~                                                                         entity.name.function.bicep
+  param adminPassword string
+//~~~~~                                                                           keyword.control.declaration.bicep
+//      ~~~~~~~~~~~~~                                                             variable.name.bicep
+//                    ~~~~~~                                                      variable.name.bicep
+  param storageAccountType string
+//~~~~~                                                                           keyword.control.declaration.bicep
+//      ~~~~~~~~~~~~~~~~~~                                                        variable.name.bicep
+//                         ~~~~~~                                                 variable.name.bicep
+  param location string = resourceGroup().location
+//~~~~~                                                                           keyword.control.declaration.bicep
+//      ~~~~~~~~                                                                  variable.name.bicep
+//               ~~~~~~                                                           variable.name.bicep
+//                        ~~~~~~~~~~~~~                                           entity.name.function.bicep
+//                                        ~~~~~~~~                                variable.other.readwrite.bicep
+  
+  var virtualMachineName = 'VM-MultiNic'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~~~~~~~~                                                          variable.name.bicep
+//                         ~                                                      string.quoted.single.bicep
+//                          ~~~~~~~~~~~                                           string.quoted.single.bicep
+//                                     ~                                          string.quoted.single.bicep
+  var nic1Name = 'nic-1'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~                                                                    variable.name.bicep
+//               ~                                                                string.quoted.single.bicep
+//                ~~~~~                                                           string.quoted.single.bicep
+//                     ~                                                          string.quoted.single.bicep
+  var nic2Name = 'nic-2'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~                                                                    variable.name.bicep
+//               ~                                                                string.quoted.single.bicep
+//                ~~~~~                                                           string.quoted.single.bicep
+//                     ~                                                          string.quoted.single.bicep
+  var virtualNetworkName = 'virtualNetwork'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~~~~~~~~                                                          variable.name.bicep
+//                         ~                                                      string.quoted.single.bicep
+//                          ~~~~~~~~~~~~~~                                        string.quoted.single.bicep
+//                                        ~                                       string.quoted.single.bicep
+  var subnet1Name = 'subnet-1'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~                                                                 variable.name.bicep
+//                  ~                                                             string.quoted.single.bicep
+//                   ~~~~~~~~                                                     string.quoted.single.bicep
+//                           ~                                                    string.quoted.single.bicep
+  var subnet2Name = 'subnet-2'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~                                                                 variable.name.bicep
+//                  ~                                                             string.quoted.single.bicep
+//                   ~~~~~~~~                                                     string.quoted.single.bicep
+//                           ~                                                    string.quoted.single.bicep
+  var publicIPAddressName = 'publicIp'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~~~~~~~~~                                                         variable.name.bicep
+//                          ~                                                     string.quoted.single.bicep
+//                           ~~~~~~~~                                             string.quoted.single.bicep
+//                                   ~                                            string.quoted.single.bicep
+  var diagStorageAccountName = concat('diags', uniqueString(resourceGroup().id))
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~~~~~~~~~~~~                                                      variable.name.bicep
+//                             ~~~~~~                                             entity.name.function.bicep
+//                                    ~                                           string.quoted.single.bicep
+//                                     ~~~~~                                      string.quoted.single.bicep
+//                                          ~                                     string.quoted.single.bicep
+//                                             ~~~~~~~~~~~~                       entity.name.function.bicep
+//                                                          ~~~~~~~~~~~~~         entity.name.function.bicep
+//                                                                          ~~    variable.other.readwrite.bicep
+  var networkSecurityGroupName = 'NSG'
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~~~~~~~~~~~~~~                                                    variable.name.bicep
+//                               ~                                                string.quoted.single.bicep
+//                                ~~~                                             string.quoted.single.bicep
+//                                   ~                                            string.quoted.single.bicep
+  var networkSecurityGroupName2 = concat(subnet2Name, '-nsg')
+//~~~                                                                             keyword.control.declaration.bicep
+//    ~~~~~~~~~~~~~~~~~~~~~~~~~                                                   variable.name.bicep
+//                                ~~~~~~                                          entity.name.function.bicep
+//                                       ~~~~~~~~~~~                              variable.other.readwrite.bicep
+//                                                    ~                           string.quoted.single.bicep
+//                                                     ~~~~                       string.quoted.single.bicep
+//                                                         ~                      string.quoted.single.bicep
+  
+  // This is the virtual machine that you're building.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                            comment.line.double-slash.bicep
+  resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~                                                                     variable.name.bicep
+//            ~                                                                   string.quoted.single.bicep
+//             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                       string.quoted.single.bicep
+//                                                         ~                      string.quoted.single.bicep
+    name: virtualMachineName
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~~~~~~~~~~~                                                      variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+      osProfile: {
+//    ~~~~~~~~~                                                                   variable.other.property.bicep
+        computerName: virtualMachineName
+//      ~~~~~~~~~~~~                                                              variable.other.property.bicep
+//                    ~~~~~~~~~~~~~~~~~~                                          variable.other.readwrite.bicep
+        adminUsername: adminUsername
+//      ~~~~~~~~~~~~~                                                             variable.other.property.bicep
+//                     ~~~~~~~~~~~~~                                              variable.other.readwrite.bicep
+        adminPassword: adminPassword
+//      ~~~~~~~~~~~~~                                                             variable.other.property.bicep
+//                     ~~~~~~~~~~~~~                                              variable.other.readwrite.bicep
+        windowsConfiguration: {
+//      ~~~~~~~~~~~~~~~~~~~~                                                      variable.other.property.bicep
+          provisionVMAgent: true
+//        ~~~~~~~~~~~~~~~~                                                        variable.other.property.bicep
+//                          ~~~~                                                  variable.other.readwrite.bicep
+        }
+      }
+      hardwareProfile: {
+//    ~~~~~~~~~~~~~~~                                                             variable.other.property.bicep
+        vmSize: virtualMachineSize
+//      ~~~~~~                                                                    variable.other.property.bicep
+//              ~~~~~~~~~~~~~~~~~~                                                variable.other.readwrite.bicep
+      }
+      storageProfile: {
+//    ~~~~~~~~~~~~~~                                                              variable.other.property.bicep
+        imageReference: {
+//      ~~~~~~~~~~~~~~                                                            variable.other.property.bicep
+          publisher: 'MicrosoftWindowsServer'
+//        ~~~~~~~~~                                                               variable.other.property.bicep
+//                   ~                                                            string.quoted.single.bicep
+//                    ~~~~~~~~~~~~~~~~~~~~~~                                      string.quoted.single.bicep
+//                                          ~                                     string.quoted.single.bicep
+          offer: 'WindowsServer'
+//        ~~~~~                                                                   variable.other.property.bicep
+//               ~                                                                string.quoted.single.bicep
+//                ~~~~~~~~~~~~~                                                   string.quoted.single.bicep
+//                             ~                                                  string.quoted.single.bicep
+          sku: '2016-Datacenter'
+//        ~~~                                                                     variable.other.property.bicep
+//             ~                                                                  string.quoted.single.bicep
+//              ~~~~~~~~~~~~~~~                                                   string.quoted.single.bicep
+//                             ~                                                  string.quoted.single.bicep
+          version: 'latest'
+//        ~~~~~~~                                                                 variable.other.property.bicep
+//                 ~                                                              string.quoted.single.bicep
+//                  ~~~~~~                                                        string.quoted.single.bicep
+//                        ~                                                       string.quoted.single.bicep
+        }
+        osDisk: {
+//      ~~~~~~                                                                    variable.other.property.bicep
+          createOption: 'FromImage'
+//        ~~~~~~~~~~~~                                                            variable.other.property.bicep
+//                      ~                                                         string.quoted.single.bicep
+//                       ~~~~~~~~~                                                string.quoted.single.bicep
+//                                ~                                               string.quoted.single.bicep
+        }
+        dataDisks: []
+//      ~~~~~~~~~                                                                 variable.other.property.bicep
+      }
+      networkProfile: {
+//    ~~~~~~~~~~~~~~                                                              variable.other.property.bicep
+        networkInterfaces: [
+//      ~~~~~~~~~~~~~~~~~                                                         variable.other.property.bicep
+          {
+            properties: {
+//          ~~~~~~~~~~                                                            variable.other.property.bicep
+              primary: true
+//            ~~~~~~~                                                             variable.other.property.bicep
+//                     ~~~~                                                       variable.other.readwrite.bicep
+            }
+            id: nic1.id
+//          ~~                                                                    variable.other.property.bicep
+//              ~~~~                                                              variable.other.readwrite.bicep
+//                   ~~                                                           variable.other.readwrite.bicep
+          }
+          {
+            properties: {
+//          ~~~~~~~~~~                                                            variable.other.property.bicep
+              primary: false
+//            ~~~~~~~                                                             variable.other.property.bicep
+//                     ~~~~~                                                      variable.other.readwrite.bicep
+            }
+            id: nic2.id
+//          ~~                                                                    variable.other.property.bicep
+//              ~~~~                                                              variable.other.readwrite.bicep
+//                   ~~                                                           variable.other.readwrite.bicep
+          }
+        ]
+      }
+      diagnosticsProfile: {
+//    ~~~~~~~~~~~~~~~~~~                                                          variable.other.property.bicep
+        bootDiagnostics: {
+//      ~~~~~~~~~~~~~~~                                                           variable.other.property.bicep
+          enabled: true
+//        ~~~~~~~                                                                 variable.other.property.bicep
+//                 ~~~~                                                           variable.other.readwrite.bicep
+          storageUri: diagsAccount.properties.primaryEndpoints.blob
+//        ~~~~~~~~~~                                                              variable.other.property.bicep
+//                    ~~~~~~~~~~~~                                                variable.other.readwrite.bicep
+//                                 ~~~~~~~~~~                                     variable.other.readwrite.bicep
+//                                            ~~~~~~~~~~~~~~~~                    variable.other.readwrite.bicep
+//                                                             ~~~~               variable.other.readwrite.bicep
+        }
+      }
+    }
+  }
+  
+  resource diagsAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~~~~~~~~~~                                                           variable.name.bicep
+//                      ~                                                         string.quoted.single.bicep
+//                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~             string.quoted.single.bicep
+//                                                                   ~            string.quoted.single.bicep
+    name: diagStorageAccountName
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~~~~~~~~~~~~~~~                                                  variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    sku: {
+//  ~~~                                                                           variable.other.property.bicep
+      name: storageAccountType
+//    ~~~~                                                                        variable.other.property.bicep
+//          ~~~~~~~~~~~~~~~~~~                                                    variable.other.readwrite.bicep
+    }
+    kind: 'Storage'
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~                                                                       string.quoted.single.bicep
+//         ~~~~~~~                                                                string.quoted.single.bicep
+//                ~                                                               string.quoted.single.bicep
+  }
+  
+  // Simple Network Security Group for subnet2
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                    comment.line.double-slash.bicep
+  resource nsg2 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~~                                                                   variable.name.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~               string.quoted.single.bicep
+//                                                                 ~              string.quoted.single.bicep
+    name: networkSecurityGroupName2
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~~~~~~~~~~~~~~~~~~                                               variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {}
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+  }
+  
+  // This will build a Virtual Network.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                           comment.line.double-slash.bicep
+  resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~~                                                                   variable.name.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                     string.quoted.single.bicep
+//                                                           ~                    string.quoted.single.bicep
+    name: virtualNetworkName
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~~~~~~~~~~~                                                      variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+      addressSpace: {
+//    ~~~~~~~~~~~~                                                                variable.other.property.bicep
+        addressPrefixes: [
+//      ~~~~~~~~~~~~~~~                                                           variable.other.property.bicep
+          '10.0.0.0/16'
+//        ~                                                                       string.quoted.single.bicep
+//         ~~~~~~~~~~~                                                            string.quoted.single.bicep
+//                    ~                                                           string.quoted.single.bicep
+        ]
+      }
+      subnets: [
+//    ~~~~~~~                                                                     variable.other.property.bicep
+        {
+          name: subnet1Name
+//        ~~~~                                                                    variable.other.property.bicep
+//              ~~~~~~~~~~~                                                       variable.other.readwrite.bicep
+          properties: {
+//        ~~~~~~~~~~                                                              variable.other.property.bicep
+            addressPrefix: '10.0.0.0/24'
+//          ~~~~~~~~~~~~~                                                         variable.other.property.bicep
+//                         ~                                                      string.quoted.single.bicep
+//                          ~~~~~~~~~~~                                           string.quoted.single.bicep
+//                                     ~                                          string.quoted.single.bicep
+          }
+        }
+        {
+          name: subnet2Name
+//        ~~~~                                                                    variable.other.property.bicep
+//              ~~~~~~~~~~~                                                       variable.other.readwrite.bicep
+          properties: {
+//        ~~~~~~~~~~                                                              variable.other.property.bicep
+            addressPrefix: '10.0.1.0/24'
+//          ~~~~~~~~~~~~~                                                         variable.other.property.bicep
+//                         ~                                                      string.quoted.single.bicep
+//                          ~~~~~~~~~~~                                           string.quoted.single.bicep
+//                                     ~                                          string.quoted.single.bicep
+            networkSecurityGroup: {
+//          ~~~~~~~~~~~~~~~~~~~~                                                  variable.other.property.bicep
+              id: nsg2.id
+//            ~~                                                                  variable.other.property.bicep
+//                ~~~~                                                            variable.other.readwrite.bicep
+//                     ~~                                                         variable.other.readwrite.bicep
+            }
+          }
+        }
+      ]
+    }
+  }
+  
+  // This will be your Primary NIC
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                comment.line.double-slash.bicep
+  resource nic1 'Microsoft.Network/networkInterfaces@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~~                                                                   variable.name.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                   string.quoted.single.bicep
+//                                                             ~                  string.quoted.single.bicep
+    name: nic1Name
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~                                                                variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+      ipConfigurations: [
+//    ~~~~~~~~~~~~~~~~                                                            variable.other.property.bicep
+        {
+          name: 'ipconfig1'
+//        ~~~~                                                                    variable.other.property.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~                                                        string.quoted.single.bicep
+//                        ~                                                       string.quoted.single.bicep
+          properties: {
+//        ~~~~~~~~~~                                                              variable.other.property.bicep
+            subnet: {
+//          ~~~~~~                                                                variable.other.property.bicep
+              id: '${vnet.id}/subnets/${subnet1Name}'
+//            ~~                                                                  variable.other.property.bicep
+//                ~                                                               string.quoted.single.bicep
+//                 ~~                                                             string.quoted.single.bicep, punctuation.definition.template-expression.begin.bicep
+//                   ~~~~                                                         string.quoted.single.bicep, variable.other.readwrite.bicep
+//                       ~                                                        string.quoted.single.bicep
+//                        ~~                                                      string.quoted.single.bicep, variable.other.readwrite.bicep
+//                          ~                                                     string.quoted.single.bicep, punctuation.definition.template-expression.end.bicep
+//                           ~~~~~~~~~                                            string.quoted.single.bicep
+//                                    ~~                                          string.quoted.single.bicep, punctuation.definition.template-expression.begin.bicep
+//                                      ~~~~~~~~~~~                               string.quoted.single.bicep, variable.other.readwrite.bicep
+//                                                 ~                              string.quoted.single.bicep, punctuation.definition.template-expression.end.bicep
+//                                                  ~                             string.quoted.single.bicep
+            }
+            privateIPAllocationMethod: 'Dynamic'
+//          ~~~~~~~~~~~~~~~~~~~~~~~~~                                             variable.other.property.bicep
+//                                     ~                                          string.quoted.single.bicep
+//                                      ~~~~~~~                                   string.quoted.single.bicep
+//                                             ~                                  string.quoted.single.bicep
+            publicIPAddress: {
+//          ~~~~~~~~~~~~~~~                                                       variable.other.property.bicep
+              id: pip.id
+//            ~~                                                                  variable.other.property.bicep
+//                ~~~                                                             variable.other.readwrite.bicep
+//                    ~~                                                          variable.other.readwrite.bicep
+            }
+          }
+        }
+      ]
+      networkSecurityGroup: {
+//    ~~~~~~~~~~~~~~~~~~~~                                                        variable.other.property.bicep
+        id: nsg.id
+//      ~~                                                                        variable.other.property.bicep
+//          ~~~                                                                   variable.other.readwrite.bicep
+//              ~~                                                                variable.other.readwrite.bicep
+      }
+    }
+  }
+  
+  // This will be your Secondary NIC
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                              comment.line.double-slash.bicep
+  resource nic2 'Microsoft.Network/networkInterfaces@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~~                                                                   variable.name.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                   string.quoted.single.bicep
+//                                                             ~                  string.quoted.single.bicep
+    name: nic2Name
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~                                                                variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+      ipConfigurations: [
+//    ~~~~~~~~~~~~~~~~                                                            variable.other.property.bicep
+        {
+          name: 'ipconfig1'
+//        ~~~~                                                                    variable.other.property.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~                                                        string.quoted.single.bicep
+//                        ~                                                       string.quoted.single.bicep
+          properties: {
+//        ~~~~~~~~~~                                                              variable.other.property.bicep
+            subnet: {
+//          ~~~~~~                                                                variable.other.property.bicep
+              id: '${vnet.id}/subnets/${subnet2Name}'
+//            ~~                                                                  variable.other.property.bicep
+//                ~                                                               string.quoted.single.bicep
+//                 ~~                                                             string.quoted.single.bicep, punctuation.definition.template-expression.begin.bicep
+//                   ~~~~                                                         string.quoted.single.bicep, variable.other.readwrite.bicep
+//                       ~                                                        string.quoted.single.bicep
+//                        ~~                                                      string.quoted.single.bicep, variable.other.readwrite.bicep
+//                          ~                                                     string.quoted.single.bicep, punctuation.definition.template-expression.end.bicep
+//                           ~~~~~~~~~                                            string.quoted.single.bicep
+//                                    ~~                                          string.quoted.single.bicep, punctuation.definition.template-expression.begin.bicep
+//                                      ~~~~~~~~~~~                               string.quoted.single.bicep, variable.other.readwrite.bicep
+//                                                 ~                              string.quoted.single.bicep, punctuation.definition.template-expression.end.bicep
+//                                                  ~                             string.quoted.single.bicep
+            }
+            privateIPAllocationMethod: 'Dynamic'
+//          ~~~~~~~~~~~~~~~~~~~~~~~~~                                             variable.other.property.bicep
+//                                     ~                                          string.quoted.single.bicep
+//                                      ~~~~~~~                                   string.quoted.single.bicep
+//                                             ~                                  string.quoted.single.bicep
+          }
+        }
+      ]
+    }
+  }
+  
+  // Public IP for your Primary NIC
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                               comment.line.double-slash.bicep
+  resource pip 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~                                                                    variable.name.bicep
+//             ~                                                                  string.quoted.single.bicep
+//              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                    string.quoted.single.bicep
+//                                                            ~                   string.quoted.single.bicep
+    name: publicIPAddressName
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~~~~~~~~~~~~                                                     variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+      publicIPAllocationMethod: 'Dynamic'
+//    ~~~~~~~~~~~~~~~~~~~~~~~~                                                    variable.other.property.bicep
+//                              ~                                                 string.quoted.single.bicep
+//                               ~~~~~~~                                          string.quoted.single.bicep
+//                                      ~                                         string.quoted.single.bicep
+    }
+  }
+  
+  // Network Security Group (NSG) for your Primary NIC
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                            comment.line.double-slash.bicep
+  resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+//~~~~~~~~                                                                        keyword.control.declaration.bicep
+//         ~~~                                                                    variable.name.bicep
+//             ~                                                                  string.quoted.single.bicep
+//              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                string.quoted.single.bicep
+//                                                                ~               string.quoted.single.bicep
+    name: networkSecurityGroupName
+//  ~~~~                                                                          variable.other.property.bicep
+//        ~~~~~~~~~~~~~~~~~~~~~~~~                                                variable.other.readwrite.bicep
+    location: location
+//  ~~~~~~~~                                                                      variable.other.property.bicep
+//            ~~~~~~~~                                                            variable.other.readwrite.bicep
+    properties: {
+//  ~~~~~~~~~~                                                                    variable.other.property.bicep
+      securityRules: [
+//    ~~~~~~~~~~~~~                                                               variable.other.property.bicep
+        {
+          name: 'default-allow-rdp'
+//        ~~~~                                                                    variable.other.property.bicep
+//              ~                                                                 string.quoted.single.bicep
+//               ~~~~~~~~~~~~~~~~~                                                string.quoted.single.bicep
+//                                ~                                               string.quoted.single.bicep
+          properties: {
+//        ~~~~~~~~~~                                                              variable.other.property.bicep
+            priority: 1000
+//          ~~~~~~~~                                                              variable.other.property.bicep
+//                    ~~~~                                                        constant.numeric.bicep
+            sourceAddressPrefix: '*'
+//          ~~~~~~~~~~~~~~~~~~~                                                   variable.other.property.bicep
+//                               ~                                                string.quoted.single.bicep
+//                                ~                                               string.quoted.single.bicep
+//                                 ~                                              string.quoted.single.bicep
+            protocol: 'Tcp'
+//          ~~~~~~~~                                                              variable.other.property.bicep
+//                    ~                                                           string.quoted.single.bicep
+//                     ~~~                                                        string.quoted.single.bicep
+//                        ~                                                       string.quoted.single.bicep
+            destinationPortRange: '3389'
+//          ~~~~~~~~~~~~~~~~~~~~                                                  variable.other.property.bicep
+//                                ~                                               string.quoted.single.bicep
+//                                 ~~~~                                           string.quoted.single.bicep
+//                                     ~                                          string.quoted.single.bicep
+            access: 'Allow'
+//          ~~~~~~                                                                variable.other.property.bicep
+//                  ~                                                             string.quoted.single.bicep
+//                   ~~~~~                                                        string.quoted.single.bicep
+//                        ~                                                       string.quoted.single.bicep
+            direction: 'Inbound'
+//          ~~~~~~~~~                                                             variable.other.property.bicep
+//                     ~                                                          string.quoted.single.bicep
+//                      ~~~~~~~                                                   string.quoted.single.bicep
+//                             ~                                                  string.quoted.single.bicep
+            sourcePortRange: '*'
+//          ~~~~~~~~~~~~~~~                                                       variable.other.property.bicep
+//                           ~                                                    string.quoted.single.bicep
+//                            ~                                                   string.quoted.single.bicep
+//                             ~                                                  string.quoted.single.bicep
+            destinationAddressPrefix: '*'
+//          ~~~~~~~~~~~~~~~~~~~~~~~~                                              variable.other.property.bicep
+//                                    ~                                           string.quoted.single.bicep
+//                                     ~                                          string.quoted.single.bicep
+//                                      ~                                         string.quoted.single.bicep
+          }
+        }
+      ]
+    }
+  }
+  
+  output publicIp string = pip.properties.ipAddress
+//~~~~~~                                                                          keyword.control.declaration.bicep
+//       ~~~~~~~~                                                                 variable.name.bicep
+//                ~~~~~~                                                          variable.name.bicep
+//                         ~~~                                                    variable.other.readwrite.bicep
+//                             ~~~~~~~~~~                                         variable.other.readwrite.bicep
+//                                        ~~~~~~~~~                               variable.other.readwrite.bicep
+  
