@@ -9,6 +9,9 @@ resource avcsdd 'sdf' = {
 resource secrets 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = {
   abc: 'def'
 }
+resource secrets 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = if (abcdef) {
+  abc: 'def'
+}
 
 resource secrets 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = [for secret in secretsObject.secrets: {}]
 
@@ -19,6 +22,8 @@ resource secrets 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = [for secret in
     lmn: 'opq'
   }
 }]
+
+resource secrets 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = [for secret in secretsObject.secrets: if (tsdf) {}]
 
 var multi = ''''''
 var multi2 = '''

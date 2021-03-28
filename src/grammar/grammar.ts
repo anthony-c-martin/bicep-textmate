@@ -228,6 +228,35 @@ const forExpression: BeginEndRule = {
   ],
 };
 
+const ifExpression: BeginEndRule = {
+  key: "if-expression",
+  scope: meta,
+  begin: `(${bounded(`if`)})`,
+  beginCaptures: {
+    "1": { scope: "keyword.control.declaration.bicep" },
+  },
+  end: after(`}`),
+  patterns: [
+    {
+      key: "if-expression-start",
+      scope: meta,
+      begin: `${after(bounded(`if`))}${ws}\\(`,
+      end: `\\)`,
+      endCaptures: {
+        "1": { scope: "keyword.control.declaration.bicep" },
+      },
+      patterns: [expression],
+    },
+    {
+      key: "if-expression-end",
+      scope: meta,
+      begin: `${after(`\\)`)}${ws}${before(`{`)}`,
+      end: after(`}`),
+      patterns: [objectLiteral],
+    },
+  ],
+};
+
 const functionCall: BeginEndRule = {
   key: "function-call",
   scope: meta,
@@ -279,10 +308,7 @@ const resourceStatement: BeginEndRule = {
       scope: meta,
       begin: `${after(`'`)}${ws}=${ws}`,
       end: `$`,
-      patterns: [
-        forExpression,
-        objectLiteral,
-      ],
+      patterns: [expression],
     }
   ],
 };
@@ -303,10 +329,7 @@ const moduleStatement: BeginEndRule = {
       scope: meta,
       begin: `${after(`'`)}${ws}=${ws}`,
       end: `$`,
-      patterns: [
-        forExpression,
-        objectLiteral,
-      ],
+      patterns: [expression],
     },
   ],
 };
@@ -361,6 +384,7 @@ const statement: IncludeRule = {
 expression.patterns = [
   identifierExpression,
   forExpression,
+  ifExpression,
   stringLiteral,
   stringVerbatim,
   numericLiteral,

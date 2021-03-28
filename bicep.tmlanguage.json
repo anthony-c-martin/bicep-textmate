@@ -69,6 +69,9 @@
           "include": "#for-expression"
         },
         {
+          "include": "#if-expression"
+        },
+        {
           "include": "#string-literal"
         },
         {
@@ -176,6 +179,49 @@
       "name": "variable.other.readwrite.bicep",
       "match": "\\b[_$[:alpha:]][_$[:alnum:]]*\\b(?!(?:\\s|/\\*.*\\*/)*\\()"
     },
+    "if-expression": {
+      "name": "meta.if-expression.bicep",
+      "begin": "(\\bif\\b)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        }
+      },
+      "end": "(?<=})",
+      "patterns": [
+        {
+          "include": "#if-expression-start"
+        },
+        {
+          "include": "#if-expression-end"
+        }
+      ]
+    },
+    "if-expression-end": {
+      "name": "meta.if-expression-end.bicep",
+      "begin": "(?<=\\))(?:\\s|/\\*.*\\*/)*(?={)",
+      "end": "(?<=})",
+      "patterns": [
+        {
+          "include": "#object-literal"
+        }
+      ]
+    },
+    "if-expression-start": {
+      "name": "meta.if-expression-start.bicep",
+      "begin": "(?<=\\bif\\b)(?:\\s|/\\*.*\\*/)*\\(",
+      "end": "\\)",
+      "endCaptures": {
+        "1": {
+          "name": "keyword.control.declaration.bicep"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
     "line-comment": {
       "name": "comment.line.double-slash.bicep",
       "match": "//.*$"
@@ -207,10 +253,7 @@
       "end": "$",
       "patterns": [
         {
-          "include": "#for-expression"
-        },
-        {
-          "include": "#object-literal"
+          "include": "#expression"
         }
       ]
     },
@@ -346,10 +389,7 @@
       "end": "$",
       "patterns": [
         {
-          "include": "#for-expression"
-        },
-        {
-          "include": "#object-literal"
+          "include": "#expression"
         }
       ]
     },
